@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Image Converter</h2>
+        <form id="convert-form" action="/convert" method="POST" enctype="multipart/form-data">
+            <div class="upload-area" id="drop-zone">
+                <input type="file" name="image" id="file-input" hidden required>
+                <button type="button" class="select-button" onclick="document.getElementById('file-input').click()">
+                    Select Images
+                </button>
+                <p class="upload-text">or drag & drop here</p>
+            </div>
+
+            <div class="format-section">
+                <label for="format" class="format-label">Select new format:</label>
+                <select name="format" id="format">
+                    <option value="PNG">PNG</option>
+                    <option value="JPG">JPG</option>
+                    <option value="GIF">GIF</option>
+                    <option value="BMP">BMP</option>
+                </select>
+            </div>
+
+            <button type="submit" class="convert-button" id="convert-button" disabled>
+                Convert Images
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const convertButton = document.getElementById('convert-button');
+
+        // Handle drag & drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            fileInput.files = e.dataTransfer.files;
+            updateConvertButton();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', updateConvertButton);
+
+        function updateConvertButton() {
+            convertButton.disabled = !fileInput.files.length;
+        }
+
+        // Handle form submission
+        document.getElementById('convert-form').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            let formData = new FormData(this);
+            
+            try {
+                convertButton.disabled = true;
+                convertButton.textContent = 'Converting...';
+                
+                let response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = 'converted_image';
+                    downloadLink.click();
+                } else {
+                    alert('Error during conversion.');
+                }
+            } catch (error) {
+                alert('Error during conversion.');
+            } finally {
+                convertButton.disabled = false;
+                convertButton.textContent = 'Convert Images';
+                fileInput.value = '';
+                updateConvertButton();
+            }
+        };
+    </script>
+</body>
+</html>
