@@ -8,10 +8,6 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-# Route for handling the image conversion
 @app.route('/convert', methods=['POST'])
 def convert():
     if 'image' not in request.files:
@@ -32,7 +28,9 @@ def convert():
         image.save(img_io, output_format)
         img_io.seek(0)
 
-        return send_file(img_io, mimetype=f'image/{output_format.lower()}', as_attachment=True, download_name=f'converted_image.{output_format.lower()}')
+        return send_file(img_io, mimetype=f'image/{output_format.lower()}', 
+                        as_attachment=True, 
+                        download_name=f'converted_image.{output_format.lower()}')
 
     except Exception as e:
         return str(e), 500
