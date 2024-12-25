@@ -28,7 +28,7 @@ A web-based application for converting image formats built using Flask and Pillo
    ```bash
    python app.py
    ```
-4. Open your browser and navigate to http://127.0.0.1:5000. Or use http://192.168.1.112:5000 on another device connected to the same local network to access the Flask app by connecting to your computer’s local IP address.
+4. Open your browser and navigate to `http://127.0.0.1:5000`. Or use `http://192.168.1.112:5000` on another device connected to the same local network to access the Flask app by connecting to your computer’s local IP address.
 
 ## Usage
 1. Upload an image by dragging and dropping it into the designated area or using the file picker.
